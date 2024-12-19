@@ -52,7 +52,7 @@ class LLM:
   # Should be set by the subclass.
   name: str
   # TODO(mihaimaruseac): Should this be MAX_TOKENS or a different global?
-  context_window: int = 2000  # Default token size.
+  context_window: int = 2320  # Default token size.
 
   _max_attempts = 5  # Maximum number of attempts to get prediction response
 
@@ -288,6 +288,12 @@ class GPT4o(GPT):
   """OpenAI's GPTi-4 model."""
 
   name = 'gpt-4o'
+
+#changed
+class GPT4omini(GPT):
+    
+    name = 'gpt-4o-mini'
+
 
 
 class AzureGPT(GPT):

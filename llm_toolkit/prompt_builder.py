@@ -212,7 +212,7 @@ class DefaultTemplateBuilder(PromptBuilder):
         continue
       targets.add(example[2])
       unique_examples.append(example)
-
+    logger.info(f"Attention: {prompt_size}")
     if (sum(example[0] for example in unique_examples) + prompt_size
         < self._model.context_window):
       return [[example[1], example[2]] for example in examples]

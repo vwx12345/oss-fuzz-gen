@@ -53,3 +53,45 @@ EXIT:
 
 If an example provided for the same library includes a unique header file, then it must be included in the solution as well.
 </instruction>
+
+<instruction>
+This rule applies only when the parameter involves a FILENAME or PATH.
+If your function requires a FILENAME or PATH as parameter, you MUST create the file first.
+WRONG:
+<code>
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+  FuzzedDataProvider fdp(data, size);
+
+  size_t fileNameSize = fdp.ConsumeIntegralInRange<size_t>(1, size - 1);
+  std::string filename = fdp.ConsumeBytesAsString(fileNameSize);
+
+  // Call function under test
+  Foo a = target_function(filename);
+
+  return 0;
+}
+</code>
+
+CORRECT:
+<code>
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+  FuzzedDataProvider fdp(data, size);
+
+  // Generate a temporary file and write the fuzzer provider data to it.
+  char filename[] = "/tmp/fuzz-XXXXXX";
+  int fd = mkstemp(filename);
+  if (fd < 0) {
+    return 0;
+  }
+  std::string data_to_write = fdp.ConsumeRemainingBytesAsString();
+  write(fd, data_to_write.data(), data_to_write.size());
+  close(fd);
+
+  // Call function under test
+  Foo a = target_function(filename);
+
+  return 0;
+}
+</code>
+
+</instruction>
